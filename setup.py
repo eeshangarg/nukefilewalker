@@ -14,7 +14,6 @@ setuptools.setup(
         'Topic :: Other/Nonlisted Topic',
         'License :: OSI Approved :: MIT License',
         'Programming Language :: Python :: 2.7',
-        'Programming Language :: Python :: 3.4',
     ],
     keywords='file indexer word counter',
     packages=setuptools.find_packages(),
