@@ -72,3 +72,14 @@ class IndexerTestCase(unittest.TestCase):
         self.assertEqual(self.indexer.most_encountered_words(5), [
             ('right', 5), ('you', 5), ('i', 5), ('at', 5), ('am', 4)
         ])
+
+    def test_most_encountered_words_longer_text_blob(self):
+        """
+        Test FileIndexer.most_encountered_words with a longer text blob
+        """
+        indexer = FileIndexer(['tests/a_dark_brown_dog'])
+        indexer.start_indexing()
+        self.assertEqual(indexer.most_encountered_words(5), [
+            ('the', 212), ('a', 88), ('and', 83), ('he', 80),
+            ('his', 69)
+        ])
