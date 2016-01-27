@@ -1,7 +1,7 @@
 import setuptools
 
 setuptools.setup(
-    name='nukeskywalker',
+    name='nukefilewalker',
     version='0.0.1',
     description='A simple file indexer',
     url='https://github.com/eeshangarg/nukefilewalker',
@@ -20,7 +20,7 @@ setuptools.setup(
     packages=setuptools.find_packages(),
     entry_points={
         'console_scripts': [
-            'nukeskywalker = nukeskywalker.file_indexer:main',
+            'nukefilewalker=nukefilewalker.indexer:main',
         ]
     },
 )
