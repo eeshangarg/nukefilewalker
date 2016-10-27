@@ -3,8 +3,50 @@ Tests for nuke_filewalker.FileIndexer
 """
 
 import unittest
+from subprocess import check_output
+from tempfile import mkstemp
+from operator import itemgetter
 
 from nukefilewalker.indexer import FileIndexer
+
+
+def _most_encountered_words_using_cmdline(filename, count=10):
+    """
+    Returns the most encountered words across a single file
+    along with a count of how many times each word occurs (highest
+    to lowest) using common command-line utilities.
+
+    @param filename: The name of the file to index.
+    @type filename: C{str}
+
+    @param count: The number of most encountered words the function
+        will return.
+    @type: C{int}
+
+    @return: A list of the most encountered words along with their
+        respective counts.
+    @rtype: C{list} of C{tuple} of (C{str}, C{int})
+    """
+    cmd = "tr -c '[:alnum:]' '[\n*]' | sort | uniq -c | sort -n | tail  -{c}".format(c=count+1)
+    handle, temp_path = mkstemp()
+    with open(filename) as fp, open(temp_path, 'r+') as tp:
+        tp.write(fp.read().lower())
+        tp.seek(0)
+        output = check_output(cmd, shell=True, stdin=tp)
+
+    output = output.splitlines()
+    output = map(str.strip, output)
+    if output[-1].isdigit():
+        output.pop()
+    else:
+        output.pop(0)
+
+    word_count = []
+    for i in output:
+        count, word = i.split()
+        word_count.append((word, int(count)))
+
+    return sorted(word_count, reverse=True, key=itemgetter(1))
 
 
 class IndexerTestCase(unittest.TestCase):
@@ -79,7 +121,7 @@ class IndexerTestCase(unittest.TestCase):
         """
         indexer = FileIndexer(['tests/a_dark_brown_dog'])
         indexer.start_indexing()
-        self.assertEqual(indexer.most_encountered_words(5), [
-            ('the', 212), ('a', 88), ('and', 83), ('he', 80),
-            ('his', 69)
-        ])
+        self.assertEqual(indexer.most_encountered_words(5),
+            _most_encountered_words_using_cmdline(
+                'tests/a_dark_brown_dog', count=5
+            ))
